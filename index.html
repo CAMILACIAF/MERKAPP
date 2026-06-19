@@ -7,42 +7,13 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      min-height: 100vh;
-      background: #0f1117;
-      color: #e8eaf0;
-      font-family: 'Inter', 'Segoe UI', sans-serif;
-      font-size: 14px;
-    }
+    body { min-height: 100vh; background: #0f1117; color: #e8eaf0; font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 14px; }
+
     /* HEADER */
-    #header {
-      border-bottom: 1px solid #1e2130;
-      padding: 18px 28px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-    #header .brand { display: flex; align-items: baseline; gap: 10px; }
-    #header .logo {
-      font-weight: 900;
-      font-size: 22px;
-      letter-spacing: -1px;
-      color: #fff;
-      background: linear-gradient(90deg, #4f8ef7, #22c55e);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    #header .tagline { color: #6b7280; font-size: 12px; }
-    #ahorro-badge {
-      background: linear-gradient(135deg, #064e2a, #0a7a3e);
-      border: 1px solid #0f9e50;
-      border-radius: 10px;
-      padding: 10px 18px;
-      text-align: center;
-      display: none;
-    }
+    #header { border-bottom: 1px solid #1e2130; padding: 18px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .logo { font-weight: 900; font-size: 22px; letter-spacing: -1px; background: linear-gradient(90deg, #4f8ef7, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .tagline { color: #6b7280; font-size: 12px; margin-top: 2px; }
+    #ahorro-badge { background: linear-gradient(135deg, #064e2a, #0a7a3e); border: 1px solid #0f9e50; border-radius: 10px; padding: 10px 18px; text-align: center; display: none; }
     #ahorro-pct { font-size: 26px; font-weight: 800; color: #22c55e; line-height: 1; }
     #ahorro-label { font-size: 11px; color: #86efac; margin-top: 3px; line-height: 1.4; }
 
@@ -50,166 +21,89 @@
     #layout { display: flex; min-height: calc(100vh - 69px); }
 
     /* SIDEBAR */
-    #sidebar {
-      width: 240px;
-      border-right: 1px solid #1e2130;
-      padding: 20px;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    #dropzone {
-      border: 2px dashed #2a2f42;
-      border-radius: 10px;
-      padding: 18px 12px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    #dropzone:hover, #dropzone.over {
-      border-color: #4f8ef7;
-      background: #131b30;
-    }
+    #sidebar { width: 260px; border-right: 1px solid #1e2130; padding: 20px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+    #dropzone { border: 2px dashed #2a2f42; border-radius: 10px; padding: 18px 12px; text-align: center; cursor: pointer; transition: all 0.15s; }
+    #dropzone:hover, #dropzone.over { border-color: #4f8ef7; background: #131b30; }
     #dropzone .icon { font-size: 22px; margin-bottom: 6px; }
     #dropzone .txt { color: #9ca3af; font-size: 12px; line-height: 1.5; }
     #dropzone .sub { color: #4b5563; font-size: 11px; margin-top: 6px; }
 
-    .section-label {
-      font-size: 11px;
-      color: #6b7280;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-    }
+    .section-label { font-size: 11px; color: #6b7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
 
     #prov-list { display: flex; flex-direction: column; gap: 4px; }
-    .prov-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 6px 10px;
-      background: #161a27;
-      border-radius: 6px;
-    }
-    .prov-name {
-      font-size: 12px;
-      color: #c9d1e8;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 160px;
-    }
-    .prov-remove {
-      background: none;
-      border: none;
-      color: #4b5563;
-      cursor: pointer;
-      font-size: 16px;
-      line-height: 1;
-      padding: 0 2px;
-    }
+    .prov-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #161a27; border-radius: 6px; }
+    .prov-name { font-size: 12px; color: #c9d1e8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; }
+    .prov-remove { background: none; border: none; color: #4b5563; cursor: pointer; font-size: 16px; line-height: 1; padding: 0 2px; }
     .prov-remove:hover { color: #f87171; }
 
-    #filtro-input {
-      width: 100%;
-      background: #161a27;
-      border: 1px solid #2a2f42;
-      border-radius: 6px;
-      padding: 7px 10px;
-      color: #e8eaf0;
-      font-size: 13px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
+    #filtro-input { width: 100%; background: #161a27; border: 1px solid #2a2f42; border-radius: 6px; padding: 7px 10px; color: #e8eaf0; font-size: 13px; outline: none; transition: border-color 0.15s; }
     #filtro-input:focus { border-color: #4f8ef7; }
 
-    #toggle-vista {
-      background: #161a27;
-      border-radius: 8px;
-      padding: 3px;
-      display: flex;
-    }
-    .toggle-btn {
-      flex: 1;
-      padding: 6px 4px;
-      border-radius: 6px;
-      border: none;
-      background: transparent;
-      color: #6b7280;
-      cursor: pointer;
-      font-size: 11px;
-      font-weight: 600;
-      transition: all 0.15s;
-    }
+    #toggle-vista { background: #161a27; border-radius: 8px; padding: 3px; display: flex; }
+    .toggle-btn { flex: 1; padding: 6px 4px; border-radius: 6px; border: none; background: transparent; color: #6b7280; cursor: pointer; font-size: 11px; font-weight: 600; transition: all 0.15s; }
     .toggle-btn.active { background: #2a3050; color: #7eb8f7; }
+
+    /* ACTION BUTTONS */
+    .action-btn { width: 100%; padding: 8px 12px; border-radius: 7px; border: 1px solid #2a2f42; background: #161a27; color: #9ca3af; cursor: pointer; font-size: 12px; font-weight: 500; text-align: left; transition: all 0.15s; display: flex; align-items: center; gap: 8px; }
+    .action-btn:hover { border-color: #4f8ef7; color: #c9d1e8; background: #1a1f30; }
+    .action-btn.danger:hover { border-color: #f87171; color: #f87171; }
+
+    /* MODAL */
+    #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: center; justify-content: center; }
+    #modal-overlay.open { display: flex; }
+    #modal { background: #161a27; border: 1px solid #2a2f42; border-radius: 12px; width: 560px; max-width: 95vw; max-height: 85vh; display: flex; flex-direction: column; }
+    #modal-header { padding: 18px 20px 14px; border-bottom: 1px solid #1e2130; display: flex; align-items: center; justify-content: space-between; }
+    #modal-title { font-weight: 700; font-size: 15px; color: #fff; }
+    #modal-close { background: none; border: none; color: #6b7280; cursor: pointer; font-size: 20px; line-height: 1; }
+    #modal-close:hover { color: #e8eaf0; }
+    #modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
+    #modal-footer { padding: 14px 20px; border-top: 1px solid #1e2130; display: flex; gap: 8px; justify-content: flex-end; }
+    .btn-primary { padding: 8px 16px; border-radius: 7px; border: none; background: #2a4a8a; color: #7eb8f7; cursor: pointer; font-size: 13px; font-weight: 600; transition: background 0.15s; }
+    .btn-primary:hover { background: #3358a8; }
+    .btn-secondary { padding: 8px 16px; border-radius: 7px; border: 1px solid #2a2f42; background: transparent; color: #9ca3af; cursor: pointer; font-size: 13px; transition: all 0.15s; }
+    .btn-secondary:hover { border-color: #4b5563; color: #c9d1e8; }
+
+    /* SINONIMOS */
+    .sin-group { background: #0f1117; border: 1px solid #1e2130; border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+    .sin-group-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .sin-canonical { font-weight: 600; color: #c9d1e8; font-size: 13px; flex: 1; background: #161a27; border: 1px solid #2a2f42; border-radius: 5px; padding: 5px 8px; color: #e8eaf0; outline: none; }
+    .sin-canonical:focus { border-color: #4f8ef7; }
+    .sin-remove-group { background: none; border: none; color: #4b5563; cursor: pointer; font-size: 16px; margin-left: 8px; }
+    .sin-remove-group:hover { color: #f87171; }
+    .sin-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .sin-tag { background: #1e2540; border: 1px solid #2a3560; border-radius: 20px; padding: 3px 10px; font-size: 12px; color: #9ca3af; display: flex; align-items: center; gap: 5px; }
+    .sin-tag-remove { background: none; border: none; color: #4b5563; cursor: pointer; font-size: 13px; line-height: 1; padding: 0; }
+    .sin-tag-remove:hover { color: #f87171; }
+    .sin-add-row { display: flex; gap: 6px; }
+    .sin-input { flex: 1; background: #161a27; border: 1px solid #2a2f42; border-radius: 5px; padding: 5px 8px; color: #e8eaf0; font-size: 12px; outline: none; }
+    .sin-input:focus { border-color: #4f8ef7; }
+    .sin-add-btn { padding: 5px 10px; border-radius: 5px; border: none; background: #1e2540; color: #7eb8f7; cursor: pointer; font-size: 12px; }
+    .sin-add-btn:hover { background: #2a3560; }
+    .add-group-btn { width: 100%; padding: 8px; border-radius: 7px; border: 1px dashed #2a2f42; background: transparent; color: #6b7280; cursor: pointer; font-size: 12px; margin-top: 4px; }
+    .add-group-btn:hover { border-color: #4f8ef7; color: #7eb8f7; }
 
     /* MAIN */
     #main { flex: 1; overflow: auto; }
-
-    #empty-state {
-      padding: 60px 40px;
-      text-align: center;
-      color: #4b5563;
-    }
+    #empty-state { padding: 60px 40px; text-align: center; color: #4b5563; }
     #empty-state .big-icon { font-size: 40px; margin-bottom: 16px; }
     #empty-state h2 { font-size: 16px; color: #6b7280; margin-bottom: 8px; font-weight: 500; }
     #empty-state p { font-size: 13px; color: #4b5563; max-width: 380px; margin: 0 auto; line-height: 1.6; }
-    #empty-state code { color: #374151; font-family: monospace; font-size: 12px; }
-    #example-table-wrap {
-      margin-top: 20px;
-      background: #161a27;
-      border-radius: 10px;
-      padding: 14px 20px;
-      display: inline-block;
-      text-align: left;
-    }
+    #example-table-wrap { margin-top: 20px; background: #161a27; border-radius: 10px; padding: 14px 20px; display: inline-block; text-align: left; }
     #example-table-wrap table { border-collapse: collapse; font-size: 12px; }
     #example-table-wrap th { padding: 3px 10px; color: #7eb8f7; font-weight: 600; border-bottom: 1px solid #2a2f42; text-align: left; }
     #example-table-wrap td { padding: 4px 10px; color: #9ca3af; }
 
-    /* TABLE */
     #table-wrap { overflow-x: auto; }
     #compare-table { border-collapse: collapse; width: 100%; }
-    #compare-table thead tr {
-      background: #0d1020;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    #compare-table th {
-      padding: 12px 16px;
-      text-align: right;
-      color: #9ca3af;
-      font-weight: 600;
-      font-size: 12px;
-      border-bottom: 1px solid #1e2130;
-      min-width: 150px;
-      white-space: nowrap;
-    }
-    #compare-table th.col-producto {
-      text-align: left;
-      color: #6b7280;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      min-width: 220px;
-      position: sticky;
-      left: 0;
-      background: #0d1020;
-    }
+    #compare-table thead tr { background: #0d1020; position: sticky; top: 0; z-index: 10; }
+    #compare-table th { padding: 12px 16px; text-align: right; color: #9ca3af; font-weight: 600; font-size: 12px; border-bottom: 1px solid #1e2130; min-width: 150px; white-space: nowrap; }
+    #compare-table th.col-producto { text-align: left; color: #6b7280; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; min-width: 220px; position: sticky; left: 0; background: #0d1020; }
     #compare-table tbody tr { border-bottom: 1px solid #1a1e2c; }
     #compare-table tbody tr:nth-child(odd) { background: #0f1117; }
     #compare-table tbody tr:nth-child(even) { background: #111420; }
     #compare-table tbody tr:hover { background: #151a28; }
     #compare-table td { padding: 10px 16px; text-align: right; }
-    #compare-table td.col-producto {
-      text-align: left;
-      position: sticky;
-      left: 0;
-      z-index: 1;
-    }
+    #compare-table td.col-producto { text-align: left; position: sticky; left: 0; z-index: 1; }
     #compare-table tbody tr:nth-child(odd) td.col-producto { background: #0f1117; }
     #compare-table tbody tr:nth-child(even) td.col-producto { background: #111420; }
     .prod-name { font-weight: 500; color: #c9d1e8; font-size: 13px; }
@@ -220,47 +114,19 @@
     .precio-val.normal { color: #9ca3af; }
     .precio-sub { font-size: 10px; color: #374151; margin-top: 1px; }
     .precio-vacio { color: #2a2f42; font-size: 12px; }
+    #table-footer { padding: 12px 20px; color: #374151; font-size: 12px; border-top: 1px solid #1e2130; }
 
-    #table-footer {
-      padding: 12px 20px;
-      color: #374151;
-      font-size: 12px;
-      border-top: 1px solid #1e2130;
-    }
-
-    /* hidden sections */
     .hidden { display: none !important; }
 
-    #btn-modelo {
-      width: 100%;
-      padding: 8px 12px;
-      background: #161a27;
-      border: 1px solid #2a2f42;
-      border-radius: 7px;
-      color: #7eb8f7;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s;
-      text-align: center;
-    }
-    #btn-modelo:hover { background: #1a2040; border-color: #4f8ef7; }
-
-    #upload-error {
-      background: #2a0d0d;
-      border: 1px solid #7f1d1d;
-      border-radius: 6px;
-      padding: 8px 10px;
-      color: #fca5a5;
-      font-size: 11px;
-      line-height: 1.5;
-    }
+    /* TOAST */
+    #toast { position: fixed; bottom: 24px; right: 24px; background: #1e2540; border: 1px solid #2a3560; border-radius: 8px; padding: 10px 16px; font-size: 13px; color: #c9d1e8; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 200; }
+    #toast.show { opacity: 1; }
   </style>
 </head>
 <body>
 
 <div id="header">
-  <div class="brand">
+  <div>
     <div class="logo">MERKAPP</div>
     <div class="tagline">Comparador de proveedores · Gastronomía</div>
   </div>
@@ -278,8 +144,6 @@
       <div class="sub">Un archivo por proveedor</div>
       <input id="fileInput" type="file" multiple accept=".xlsx,.xls,.csv" style="display:none" />
     </div>
-    <button id="btn-modelo" onclick="descargarModelo()">⬇ Descargar modelo Excel</button>
-    <div id="upload-error" class="hidden"></div>
 
     <div id="prov-section" class="hidden">
       <div class="section-label">Proveedores cargados</div>
@@ -298,6 +162,15 @@
         <button class="toggle-btn" id="btn-unitario" onclick="setVista(true)">Por unidad</button>
       </div>
     </div>
+
+    <div id="tools-section" class="hidden" style="display:flex;flex-direction:column;gap:6px">
+      <div class="section-label">Herramientas</div>
+      <button class="action-btn" onclick="openSinonimos()">🔗 Agrupar productos similares</button>
+      <button class="action-btn" onclick="exportarSesion()">💾 Exportar sesión</button>
+      <button class="action-btn" onclick="document.getElementById('importInput').click()">📥 Importar sesión</button>
+      <input id="importInput" type="file" accept=".json" style="display:none" onchange="importarSesion(event)" />
+      <button class="action-btn danger" onclick="limpiarTodo()">🗑 Limpiar todo</button>
+    </div>
   </div>
 
   <div id="main">
@@ -305,22 +178,12 @@
       <div class="big-icon">📊</div>
       <h2>Todavía no hay datos</h2>
       <p>Subí los Excel de cada proveedor con estas columnas:</p>
-      <p style="margin-top:6px"><code>proveedor · producto · presentacion · cantidad_unidad · unidad · precio_lista</code></p>
+      <p style="margin-top:6px"><code style="color:#374151;font-family:monospace;font-size:12px">proveedor · producto · presentacion · cantidad_unidad · unidad · precio_lista</code></p>
       <div id="example-table-wrap">
         <div class="section-label" style="margin-bottom:8px">Ejemplo de fila</div>
         <table>
-          <thead>
-            <tr>
-              <th>proveedor</th><th>producto</th><th>presentacion</th>
-              <th>cantidad_unidad</th><th>unidad</th><th>precio_lista</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>La Molienda</td><td>Harina 0000</td><td>bolsa</td>
-              <td>25</td><td>kg</td><td>8500</td>
-            </tr>
-          </tbody>
+          <thead><tr><th>proveedor</th><th>producto</th><th>presentacion</th><th>cantidad_unidad</th><th>unidad</th><th>precio_lista</th></tr></thead>
+          <tbody><tr><td>La Molienda</td><td>Harina 0000</td><td>bolsa</td><td>25</td><td>kg</td><td>8500</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -334,127 +197,183 @@
   </div>
 </div>
 
+<!-- MODAL SINÓNIMOS -->
+<div id="modal-overlay">
+  <div id="modal">
+    <div id="modal-header">
+      <div id="modal-title">🔗 Agrupar productos similares</div>
+      <button id="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div id="modal-body">
+      <p style="color:#6b7280;font-size:12px;margin-bottom:14px;line-height:1.6">
+        Agrupá nombres distintos que representan el mismo producto. La tabla usará el <strong style="color:#c9d1e8">nombre canónico</strong> para mostrar las filas unificadas.
+      </p>
+      <div id="sin-groups"></div>
+      <button class="add-group-btn" onclick="addSinGroup()">+ Agregar grupo</button>
+    </div>
+    <div id="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveSinonimos()">Aplicar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
 <script>
+  // ---- STATE ----
   let allData = [];
   let vistaUnitario = false;
+  let sinonimos = []; // [{canonical: string, aliases: [string]}]
 
-  // --- FILE HANDLING ---
+  // ---- PERSISTENCE ----
+  function saveToStorage() {
+    try {
+      localStorage.setItem('merkapp_data', JSON.stringify(allData));
+      localStorage.setItem('merkapp_sinonimos', JSON.stringify(sinonimos));
+    } catch(e) {}
+  }
+
+  function loadFromStorage() {
+    try {
+      const d = localStorage.getItem('merkapp_data');
+      const s = localStorage.getItem('merkapp_sinonimos');
+      if (d) allData = JSON.parse(d);
+      if (s) sinonimos = JSON.parse(s);
+    } catch(e) {}
+  }
+
+  function exportarSesion() {
+    const payload = { allData, sinonimos };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'merkapp-sesion.json';
+    a.click();
+    toast('Sesión exportada ✓');
+  }
+
+  function importarSesion(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const payload = JSON.parse(ev.target.result);
+        if (payload.allData) allData = payload.allData;
+        if (payload.sinonimos) sinonimos = payload.sinonimos;
+        saveToStorage();
+        render();
+        toast('Sesión importada ✓');
+      } catch(err) {
+        toast('⚠ Error al importar el archivo');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  }
+
+  function limpiarTodo() {
+    if (!confirm('¿Borrar todos los datos cargados?')) return;
+    allData = [];
+    sinonimos = [];
+    saveToStorage();
+    render();
+    toast('Datos eliminados');
+  }
+
+  // ---- FILE HANDLING ----
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('fileInput');
 
   dropzone.addEventListener('click', () => fileInput.click());
   dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('over'); });
   dropzone.addEventListener('dragleave', () => dropzone.classList.remove('over'));
-  dropzone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropzone.classList.remove('over');
-    processFiles(e.dataTransfer.files);
-  });
-  fileInput.addEventListener('change', e => processFiles(e.target.files));
-
-  function descargarModelo() {
-    const ws_data = [
-      ['proveedor', 'producto', 'presentacion', 'cantidad_unidad', 'unidad', 'precio_lista'],
-      ['La Molienda', 'Harina 0000', 'bolsa', 25, 'kg', 8500],
-      ['La Molienda', 'Aceite de girasol', 'bidon', 18, 'lt', 12400],
-      ['La Molienda', 'Sal fina', 'bolsa', 1, 'kg', 950],
-      ['La Molienda', 'Arroz largo fino', 'bolsa', 5, 'kg', 4200],
-    ];
-    const ws = XLSX.utils.aoa_to_sheet(ws_data);
-
-    // Ancho de columnas
-    ws['!cols'] = [
-      { wch: 18 }, { wch: 22 }, { wch: 14 },
-      { wch: 16 }, { wch: 8 }, { wch: 14 }
-    ];
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Lista de precios');
-    XLSX.writeFile(wb, 'modelo_merkapp.xlsx');
-  }
-
-  function showError(msg) {
-    const el = document.getElementById('upload-error');
-    el.textContent = msg;
-    el.classList.remove('hidden');
-    setTimeout(() => el.classList.add('hidden'), 6000);
-  }
+  dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('over'); processFiles(e.dataTransfer.files); });
+  fileInput.addEventListener('change', e => { processFiles(e.target.files); e.target.value=''; });
 
   function processFiles(files) {
     Array.from(files).forEach(file => {
       const reader = new FileReader();
       reader.onload = e => {
-        try {
-          const wb = XLSX.read(e.target.result, { type: 'array' });
-          const rows = parseSheet(wb, file.name);
-          if (!rows.length) {
-            showError(`"${file.name}" no tiene filas válidas. Revisá que tenga las columnas: proveedor, producto, precio_lista.`);
-            return;
-          }
-          const provName = rows[0].proveedor;
-          allData = allData.filter(r => r.proveedor !== provName);
-          allData = allData.concat(rows);
-          render();
-        } catch(err) {
-          showError(`Error al leer "${file.name}": ${err.message}`);
-        }
+        const wb = XLSX.read(e.target.result, { type: 'array' });
+        const rows = parseSheet(wb, file.name);
+        if (!rows.length) { toast('⚠ No se encontraron datos en ' + file.name); return; }
+        const provName = rows[0].proveedor;
+        allData = allData.filter(r => r.proveedor !== provName).concat(rows);
+        saveToStorage();
+        render();
+        toast(provName + ' cargado ✓ (' + rows.length + ' productos)');
       };
       reader.readAsArrayBuffer(file);
     });
   }
 
-  function normalizeKey(k) {
-    return String(k).toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')  // quitar tildes
-      .replace(/\s+/g, '_')   // espacios → guion bajo
-      .replace(/[^a-z0-9_]/g, ''); // solo alfanumérico
-  }
-
   function parseSheet(wb, filename) {
     const sheet = wb.Sheets[wb.SheetNames[0]];
-    // Leer como array para normalizar headers manualmente
-    const raw = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
-    if (!raw.length) return [];
-
-    // Primera fila = headers, normalizar
-    const headers = raw[0].map(normalizeKey);
+    const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
     const provName = filename.replace(/\.[^.]+$/, '');
+    return rows
+      .filter(r => r.producto && r.precio_lista)
+      .map(r => ({
+        proveedor: String(r.proveedor || provName).trim(),
+        producto: String(r.producto).trim(),
+        productoKey: normalizeKey(String(r.producto).trim()),
+        presentacion: r.presentacion || '',
+        cantidad_unidad: parseFloat(r.cantidad_unidad) || 1,
+        unidad: r.unidad || '',
+        precio_lista: parseFloat(String(r.precio_lista).replace(/[^0-9.,]/g,'').replace(',','.')) || 0,
+      }));
+  }
 
-    const rows = [];
-    for (let i = 1; i < raw.length; i++) {
-      const obj = {};
-      headers.forEach((h, idx) => { obj[h] = raw[i][idx]; });
+  function normalizeKey(str) {
+    return str.toLowerCase().trim()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ');
+  }
 
-      const producto = String(obj.producto || '').trim();
-      const precio_lista = parseFloat(String(obj.precio_lista || '').replace(',', '.'));
-
-      if (!producto || isNaN(precio_lista) || precio_lista <= 0) continue;
-
-      rows.push({
-        proveedor: String(obj.proveedor || provName).trim(),
-        producto: producto.toLowerCase(),
-        productoDisplay: producto,
-        presentacion: String(obj.presentacion || '').trim(),
-        cantidad_unidad: parseFloat(String(obj.cantidad_unidad || '1').replace(',', '.')) || 1,
-        unidad: String(obj.unidad || '').trim(),
-        precio_lista,
-      });
+  // ---- SINÓNIMOS ----
+  // Resuelve el nombre canónico de un productoKey
+  function resolveCanonical(key) {
+    for (const g of sinonimos) {
+      const aliases = g.aliases.map(a => normalizeKey(a));
+      const canonical = normalizeKey(g.canonical);
+      if (aliases.includes(key) || canonical === key) {
+        return normalizeKey(g.canonical);
+      }
     }
-    return rows;
+    return key;
   }
 
-  // --- STATE ---
-  function getProveedores() {
-    return [...new Set(allData.map(r => r.proveedor))];
+  function getCanonicalDisplay(key) {
+    for (const g of sinonimos) {
+      const aliases = g.aliases.map(a => normalizeKey(a));
+      const canonical = normalizeKey(g.canonical);
+      if (aliases.includes(key) || canonical === key) {
+        return g.canonical;
+      }
+    }
+    // buscar display original en allData
+    const row = allData.find(r => r.productoKey === key);
+    return row ? row.producto : key;
   }
 
+  // ---- BUILD MATRIX ----
   function buildMatrix() {
     const map = {};
     allData.forEach(r => {
-      if (!map[r.producto]) map[r.producto] = { display: r.productoDisplay, proveedores: {} };
-      map[r.producto].proveedores[r.proveedor] = r;
+      const canon = resolveCanonical(r.productoKey);
+      if (!map[canon]) map[canon] = { display: getCanonicalDisplay(r.productoKey), proveedores: {} };
+      // si ya hay un entry para este proveedor, quedarse con el más barato
+      if (!map[canon].proveedores[r.proveedor] || r.precio_lista < map[canon].proveedores[r.proveedor].precio_lista) {
+        map[canon].proveedores[r.proveedor] = r;
+      }
     });
     return map;
+  }
+
+  function getProveedores() {
+    return [...new Set(allData.map(r => r.proveedor))];
   }
 
   function precioUnitario(row) {
@@ -478,47 +397,46 @@
 
   function removeProveedor(prov) {
     allData = allData.filter(r => r.proveedor !== prov);
+    saveToStorage();
     render();
   }
 
-  // --- RENDER ---
+  // ---- RENDER ----
   function render() {
     const proveedores = getProveedores();
     const matrix = buildMatrix();
     const filtro = document.getElementById('filtro-input').value.toLowerCase().trim();
 
     const productos = Object.entries(matrix)
-      .filter(([key]) => !filtro || key.includes(filtro))
-      .sort((a, b) => a[0].localeCompare(b[0]));
+      .filter(([key, info]) => !filtro || key.includes(filtro) || info.display.toLowerCase().includes(filtro))
+      .sort((a, b) => a[1].display.localeCompare(b[1].display));
 
-    // toggle visibility
     const hasData = allData.length > 0;
     document.getElementById('empty-state').classList.toggle('hidden', hasData);
     document.getElementById('table-wrap').classList.toggle('hidden', !hasData);
     document.getElementById('prov-section').classList.toggle('hidden', !hasData);
     document.getElementById('filtro-section').classList.toggle('hidden', !hasData);
     document.getElementById('vista-section').classList.toggle('hidden', !hasData);
+    const toolsEl = document.getElementById('tools-section');
+    if (hasData) { toolsEl.classList.remove('hidden'); toolsEl.style.display = 'flex'; }
+    else { toolsEl.classList.add('hidden'); }
 
-    if (!hasData) {
-      document.getElementById('ahorro-badge').style.display = 'none';
-      return;
-    }
+    if (!hasData) { document.getElementById('ahorro-badge').style.display = 'none'; return; }
 
-    // proveedores list
+    // prov list
     const provList = document.getElementById('prov-list');
     provList.innerHTML = '';
     proveedores.forEach(p => {
       const div = document.createElement('div');
       div.className = 'prov-item';
-      div.innerHTML = `<div class="prov-name" title="${p}">${p}</div><button class="prov-remove" onclick="removeProveedor('${p.replace(/'/g,"\\'")}')">×</button>`;
+      div.innerHTML = `<div class="prov-name" title="${p}">${p}</div><button class="prov-remove" onclick="removeProveedor(${JSON.stringify(p)})">×</button>`;
       provList.appendChild(div);
     });
 
-    // table header
-    const thead = document.getElementById('table-head');
+    // table head
     let thHTML = `<th class="col-producto">Producto</th>`;
     proveedores.forEach(p => { thHTML += `<th>${p}</th>`; });
-    thead.innerHTML = `<tr>${thHTML}</tr>`;
+    document.getElementById('table-head').innerHTML = `<tr>${thHTML}</tr>`;
 
     // table body
     const tbody = document.getElementById('table-body');
@@ -532,7 +450,7 @@
       const minP = validos.length ? Math.min(...validos) : null;
       const maxP = validos.length ? Math.max(...validos) : null;
 
-      const firstRow = info.proveedores[proveedores[0]];
+      const firstRow = info.proveedores[proveedores.find(p => info.proveedores[p])];
       let tdHTML = `<td class="col-producto">
         <div class="prod-name">${info.display}</div>
         ${vistaUnitario && firstRow?.unidad ? `<div class="prod-unit">por ${firstRow.unidad}</div>` : ''}
@@ -546,12 +464,8 @@
         } else {
           const cls = validos.length > 1 ? (precio === minP ? 'barato' : precio === maxP ? 'caro' : 'normal') : 'normal';
           let sub = '';
-          if (!vistaUnitario && row?.presentacion) {
-            sub = `<div class="precio-sub">${row.presentacion}${row.cantidad_unidad > 1 ? ' ' + row.cantidad_unidad + row.unidad : ''}</div>`;
-          }
-          if (vistaUnitario && row) {
-            sub = `<div class="precio-sub">lista: ${fmt(row.precio_lista)}</div>`;
-          }
+          if (!vistaUnitario && row?.presentacion) sub = `<div class="precio-sub">${row.presentacion}${row.cantidad_unidad > 1 ? ' ' + row.cantidad_unidad + (row.unidad||'') : ''}</div>`;
+          if (vistaUnitario && row) sub = `<div class="precio-sub">lista: ${fmt(row.precio_lista)}</div>`;
           tdHTML += `<td><div class="precio-val ${cls}">${fmt(precio)}</div>${sub}</td>`;
         }
       });
@@ -561,31 +475,132 @@
       tbody.appendChild(tr);
     });
 
-    // footer
     document.getElementById('table-footer').textContent =
       `${productos.length} productos · ${proveedores.length} proveedores${filtro ? ` · filtrando por "${filtro}"` : ''}`;
 
-    // ahorro potencial
+    // ahorro
     let sumBarato = 0, sumCaro = 0;
     productos.forEach(([, info]) => {
       const precios = proveedores.map(p => {
         const r = info.proveedores[p];
         return vistaUnitario ? precioUnitario(r) : r?.precio_lista;
       }).filter(v => v != null && v > 0);
-      if (precios.length > 1) {
-        sumBarato += Math.min(...precios);
-        sumCaro += Math.max(...precios);
-      }
+      if (precios.length > 1) { sumBarato += Math.min(...precios); sumCaro += Math.max(...precios); }
     });
     const badge = document.getElementById('ahorro-badge');
     if (sumCaro > 0 && proveedores.length > 1) {
-      const pct = Math.round(((sumCaro - sumBarato) / sumCaro) * 100);
-      document.getElementById('ahorro-pct').textContent = pct + '%';
+      document.getElementById('ahorro-pct').textContent = Math.round(((sumCaro - sumBarato) / sumCaro) * 100) + '%';
       badge.style.display = 'block';
-    } else {
-      badge.style.display = 'none';
-    }
+    } else { badge.style.display = 'none'; }
   }
+
+  // ---- MODAL SINÓNIMOS ----
+  let tempSinonimos = [];
+
+  function openSinonimos() {
+    tempSinonimos = JSON.parse(JSON.stringify(sinonimos));
+
+    // auto-sugerir: productos con nombres parecidos que no están agrupados
+    // (solo mostrar los existentes + sugerencias)
+    renderSinGroups();
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+
+  function renderSinGroups() {
+    const container = document.getElementById('sin-groups');
+    container.innerHTML = '';
+
+    // mostrar todos los productos conocidos como ayuda
+    const allProducts = [...new Set(allData.map(r => r.producto))].sort();
+
+    tempSinonimos.forEach((group, gi) => {
+      const div = document.createElement('div');
+      div.className = 'sin-group';
+      div.innerHTML = `
+        <div class="sin-group-header">
+          <input class="sin-canonical" value="${group.canonical}" placeholder="Nombre canónico (cómo va a aparecer en la tabla)" onchange="tempSinonimos[${gi}].canonical = this.value" />
+          <button class="sin-remove-group" onclick="removeSinGroup(${gi})">×</button>
+        </div>
+        <div class="sin-tags" id="tags-${gi}"></div>
+        <div class="sin-add-row">
+          <input class="sin-input" id="sin-input-${gi}" placeholder="Nombre a agrupar (ej: Harina 0000 x25kg)" list="products-list" />
+          <button class="sin-add-btn" onclick="addAlias(${gi})">+ Agregar</button>
+        </div>
+      `;
+      container.appendChild(div);
+      renderTags(gi);
+    });
+
+    // datalist con todos los productos
+    let dl = document.getElementById('products-list');
+    if (!dl) { dl = document.createElement('datalist'); dl.id = 'products-list'; document.body.appendChild(dl); }
+    dl.innerHTML = allProducts.map(p => `<option value="${p}">`).join('');
+  }
+
+  function renderTags(gi) {
+    const container = document.getElementById(`tags-${gi}`);
+    if (!container) return;
+    container.innerHTML = '';
+    tempSinonimos[gi].aliases.forEach((alias, ai) => {
+      const span = document.createElement('span');
+      span.className = 'sin-tag';
+      span.innerHTML = `${alias} <button class="sin-tag-remove" onclick="removeAlias(${gi},${ai})">×</button>`;
+      container.appendChild(span);
+    });
+  }
+
+  function addAlias(gi) {
+    const input = document.getElementById(`sin-input-${gi}`);
+    const val = input.value.trim();
+    if (!val) return;
+    if (!tempSinonimos[gi].aliases.includes(val)) tempSinonimos[gi].aliases.push(val);
+    input.value = '';
+    renderTags(gi);
+  }
+
+  function removeAlias(gi, ai) {
+    tempSinonimos[gi].aliases.splice(ai, 1);
+    renderTags(gi);
+  }
+
+  function removeSinGroup(gi) {
+    tempSinonimos.splice(gi, 1);
+    renderSinGroups();
+  }
+
+  function addSinGroup() {
+    tempSinonimos.push({ canonical: '', aliases: [] });
+    renderSinGroups();
+    // scroll al final
+    const body = document.getElementById('modal-body');
+    setTimeout(() => body.scrollTop = body.scrollHeight, 50);
+  }
+
+  function saveSinonimos() {
+    sinonimos = tempSinonimos.filter(g => g.canonical.trim());
+    saveToStorage();
+    closeModal();
+    render();
+    toast('Agrupaciones aplicadas ✓');
+  }
+
+  // ---- TOAST ----
+  let toastTimer;
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+  }
+
+  // ---- INIT ----
+  loadFromStorage();
+  render();
 </script>
 </body>
 </html>
