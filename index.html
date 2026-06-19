@@ -230,6 +230,31 @@
 
     /* hidden sections */
     .hidden { display: none !important; }
+
+    #btn-modelo {
+      width: 100%;
+      padding: 8px 12px;
+      background: #161a27;
+      border: 1px solid #2a2f42;
+      border-radius: 7px;
+      color: #7eb8f7;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    #btn-modelo:hover { background: #1a2040; border-color: #4f8ef7; }
+
+    #upload-error {
+      background: #2a0d0d;
+      border: 1px solid #7f1d1d;
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: #fca5a5;
+      font-size: 11px;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
@@ -253,6 +278,8 @@
       <div class="sub">Un archivo por proveedor</div>
       <input id="fileInput" type="file" multiple accept=".xlsx,.xls,.csv" style="display:none" />
     </div>
+    <button id="btn-modelo" onclick="descargarModelo()">⬇ Descargar modelo Excel</button>
+    <div id="upload-error" class="hidden"></div>
 
     <div id="prov-section" class="hidden">
       <div class="section-label">Proveedores cargados</div>
@@ -325,37 +352,95 @@
   });
   fileInput.addEventListener('change', e => processFiles(e.target.files));
 
+  function descargarModelo() {
+    const ws_data = [
+      ['proveedor', 'producto', 'presentacion', 'cantidad_unidad', 'unidad', 'precio_lista'],
+      ['La Molienda', 'Harina 0000', 'bolsa', 25, 'kg', 8500],
+      ['La Molienda', 'Aceite de girasol', 'bidon', 18, 'lt', 12400],
+      ['La Molienda', 'Sal fina', 'bolsa', 1, 'kg', 950],
+      ['La Molienda', 'Arroz largo fino', 'bolsa', 5, 'kg', 4200],
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+    // Ancho de columnas
+    ws['!cols'] = [
+      { wch: 18 }, { wch: 22 }, { wch: 14 },
+      { wch: 16 }, { wch: 8 }, { wch: 14 }
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Lista de precios');
+    XLSX.writeFile(wb, 'modelo_merkapp.xlsx');
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('upload-error');
+    el.textContent = msg;
+    el.classList.remove('hidden');
+    setTimeout(() => el.classList.add('hidden'), 6000);
+  }
+
   function processFiles(files) {
     Array.from(files).forEach(file => {
       const reader = new FileReader();
       reader.onload = e => {
-        const wb = XLSX.read(e.target.result, { type: 'array' });
-        const rows = parseSheet(wb, file.name);
-        if (!rows.length) return;
-        const provName = rows[0].proveedor;
-        allData = allData.filter(r => r.proveedor !== provName);
-        allData = allData.concat(rows);
-        render();
+        try {
+          const wb = XLSX.read(e.target.result, { type: 'array' });
+          const rows = parseSheet(wb, file.name);
+          if (!rows.length) {
+            showError(`"${file.name}" no tiene filas válidas. Revisá que tenga las columnas: proveedor, producto, precio_lista.`);
+            return;
+          }
+          const provName = rows[0].proveedor;
+          allData = allData.filter(r => r.proveedor !== provName);
+          allData = allData.concat(rows);
+          render();
+        } catch(err) {
+          showError(`Error al leer "${file.name}": ${err.message}`);
+        }
       };
       reader.readAsArrayBuffer(file);
     });
   }
 
+  function normalizeKey(k) {
+    return String(k).toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')  // quitar tildes
+      .replace(/\s+/g, '_')   // espacios → guion bajo
+      .replace(/[^a-z0-9_]/g, ''); // solo alfanumérico
+  }
+
   function parseSheet(wb, filename) {
     const sheet = wb.Sheets[wb.SheetNames[0]];
-    const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+    // Leer como array para normalizar headers manualmente
+    const raw = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+    if (!raw.length) return [];
+
+    // Primera fila = headers, normalizar
+    const headers = raw[0].map(normalizeKey);
     const provName = filename.replace(/\.[^.]+$/, '');
-    return rows
-      .filter(r => r.producto && r.precio_lista)
-      .map(r => ({
-        proveedor: String(r.proveedor || provName).trim(),
-        producto: String(r.producto).trim().toLowerCase(),
-        productoDisplay: String(r.producto).trim(),
-        presentacion: r.presentacion || '',
-        cantidad_unidad: parseFloat(r.cantidad_unidad) || 1,
-        unidad: r.unidad || '',
-        precio_lista: parseFloat(r.precio_lista) || 0,
-      }));
+
+    const rows = [];
+    for (let i = 1; i < raw.length; i++) {
+      const obj = {};
+      headers.forEach((h, idx) => { obj[h] = raw[i][idx]; });
+
+      const producto = String(obj.producto || '').trim();
+      const precio_lista = parseFloat(String(obj.precio_lista || '').replace(',', '.'));
+
+      if (!producto || isNaN(precio_lista) || precio_lista <= 0) continue;
+
+      rows.push({
+        proveedor: String(obj.proveedor || provName).trim(),
+        producto: producto.toLowerCase(),
+        productoDisplay: producto,
+        presentacion: String(obj.presentacion || '').trim(),
+        cantidad_unidad: parseFloat(String(obj.cantidad_unidad || '1').replace(',', '.')) || 1,
+        unidad: String(obj.unidad || '').trim(),
+        precio_lista,
+      });
+    }
+    return rows;
   }
 
   // --- STATE ---
